@@ -1,0 +1,12 @@
+<h2>Anket Silme</h2>
+
+<p>{{ poll.title }} silinsin mi?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Evet, sil</button>
+</form>
+
+<a href="{% url 'anket:poll_list' %}">
+    Geri dön
+</a>

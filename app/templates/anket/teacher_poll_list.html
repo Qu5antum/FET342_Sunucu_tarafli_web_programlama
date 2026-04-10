@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anket listesi</title>
+</head>
+<body>
+
+<h2>Mevcut Anketler</h2>
+
+{% if polls %}
+    <ul>
+        {% for poll in polls %}
+            <li>
+                <h3>{{ poll.title }}</h3>
+                <p>Tanım: {{ poll.description }}</p>
+                <p>Oluşum tarihi: {{ poll.created_at }}</p>
+                
+                <a href="{% url 'anket:poll_summary' poll.id %}">
+                    <button>Özeti gör</button>
+                </a>
+
+                <form method="post" action="{% url 'anket:delete_poll' poll.id %}" style="display:inline;">
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            onclick="return confirm('Bu anketi silmek istiyor musun?')">
+                        Sil
+                    </button>
+                </form>
+            
+                {% if perms.anket.view_poll %}
+                    <div style="margin-top:10px;">
+                        <form method="get" action="{% url 'anket:export_poll' poll.id %}">
+                            
+                            <label>Dışa aktarma biçimi:</label>
+
+                            <select name="format">
+                                <option value="csv">CSV</option>
+                            </select>
+
+                            <button type="submit">
+                                İndir
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+
+            </li>
+        {% endfor %}
+    </ul>
+
+{% else %}
+    <p>Anket mevcut değil.</p>
+{% endif %}
+
+</body>
+</html>

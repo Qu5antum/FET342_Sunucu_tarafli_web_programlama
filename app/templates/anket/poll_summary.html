@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anket Özeti</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .chart-container {
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>{{ poll.title }} - Özet</h2>
+<p>{{ poll.description }}</p>
+
+<div class="card">
+    <h4>Katılım Oranı</h4>
+    <p>
+        {{ total_votes }} / {{ total_potential_users }}
+        ({{ participation_rate }}%)
+    </p>
+</div>
+
+{% for item in questions_data %}
+    <div class="card">
+
+        <h4>{{ item.question_text }}</h4>
+
+        <div class="chart-container">
+            <canvas id="chart_{{ forloop.counter }}"></canvas>
+        </div>
+
+        <script>
+            const ctx{{ forloop.counter }} = document.getElementById("chart_{{ forloop.counter }}");
+
+            new Chart(ctx{{ forloop.counter }}, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for choice in item.choices %}
+                            "{{ choice.text }}",
+                        {% endfor %}
+                    ],
+                    datasets: [{
+                        label: 'Votes',
+                        data: [
+                            {% for choice in item.choices %}
+                                {{ choice.votes }},
+                            {% endfor %}
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+
+        <table border="1" cellpadding="5">
+            <tr>
+                <th>Seçenek</th>
+                <th>Oylar</th>
+                <th>%</th>
+                <th>Durum</th>
+            </tr>
+
+            {% for choice in item.choices %}
+                <tr>
+                    <td>{{ choice.text }}</td>
+                    <td>{{ choice.votes }}</td>
+                    <td>{{ choice.percentage }}%</td>
+                    <td>
+                        {% if choice.is_winner %}
+                            Kazanan
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+{% endfor %}
+
+</body>
+</html>

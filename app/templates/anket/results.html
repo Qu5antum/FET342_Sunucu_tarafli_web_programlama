@@ -7,6 +7,11 @@
 <p><strong>Teşekkürler, {{ user.username }}! Oylarınız kaydedildi.</strong></p>
 
 <hr>
+{% if perms.anket.view_poll %}
+    <a href="{% url 'anket:export_poll' poll.id %}">
+        <button>CSV İndir</button>
+    </a>
+{% endif %}
 
 {% for question in questions %}
     <div style="margin-bottom: 40px;">

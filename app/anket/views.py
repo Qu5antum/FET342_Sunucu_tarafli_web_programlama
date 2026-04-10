@@ -1,13 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
+from django.db.models import Count, Max
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 import json
+import csv
 
-from .models import Poll, PollParticipation, Option, Vote, Group, Question
-
+from .models import Poll, PollParticipation, Option, Vote, Group, Question, User
 
 def in_editor_group(user):
     return user.groups.filter(name='teacher').exists()
@@ -16,7 +18,7 @@ def in_editor_group(user):
 class CustomLoginView(LoginView):
     template_name = "login/login.html"
 
-
+# anket oluşturma (sadece hocalar görebilir)
 @login_required
 @user_passes_test(in_editor_group)
 @transaction.atomic
@@ -139,4 +141,128 @@ def poll_results(request, poll_id):
         "questions": questions
     })
             
+
+# sonuçları csv formatında indirme
+@login_required
+def import_csv(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="poll_{poll_id}_results.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Anket', 'Soru', 'Seçenek', 'Oy'])
+
+    options = Option.objects.filter(question__poll=poll).annotate(
+        vote_count=Count('vote')
+    )
+
+    for option in options:
+        writer.writerow([
+            poll.title,
+            option.question.text,
+            option.text,
+            option.vote_count
+        ])
+
+    return response
+
+
+@login_required
+def list_poll_of_students_for_teacher(request):
+    polls = Poll.objects.filter(groups__name="student")
+
+    return render(request, "anket/teacher_poll_list.html", {"polls": polls})
+
+
+# oy özetleme
+def poll_summary_dashboard(request, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+
+    groups = poll.groups.all()
+
+    total_potential_users = User.objects.filter(
+        groups__in=groups
+    ).distinct().count()
+
+    if total_potential_users == 0:
+        total_potential_users = User.objects.count()
+
+    total_votes = Vote.objects.filter(poll=poll).count()
+
+    participation_rate = (
+        (total_votes / total_potential_users) * 100
+        if total_potential_users > 0 else 0
+    )
+
+    questions_data = []
+
+    questions = Question.objects.filter(poll=poll)
+
+    for question in questions:
+
+        options = Option.objects.filter(question=question)
+
+        options_with_votes = []
+
+        max_votes = 0
+
+        for option in options:
+            votes_count = Vote.objects.filter(option=option).count()
+
+            if votes_count > max_votes:
+                max_votes = votes_count
+
+            options_with_votes.append({
+                "text": option.text,
+                "votes": votes_count
+            })
+
+        choices_list = []
+
+        for opt in options_with_votes:
+
+            percentage = (
+                (opt["votes"] / total_votes * 100)
+                if total_votes > 0 else 0
+            )
+
+            choices_list.append({
+                "text": opt["text"],
+                "votes": opt["votes"],
+                "percentage": round(percentage, 2),
+                "is_winner": opt["votes"] == max_votes and max_votes > 0
+            })
+
+        questions_data.append({
+            "question_text": question.text,
+            "choices": choices_list
+        })
+
+    context = {
+        "poll": poll,
+        "total_votes": total_votes,
+        "total_potential_users": total_potential_users,
+        "participation_rate": round(participation_rate, 2),
+        "questions_data": questions_data,
+    }
+
+    return render(request, "anket/poll_summary.html", context)
+    
+# anket silme
+@login_required
+@permission_required('anket.delete_poll', raise_exception=True)
+def delete_poll(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+
+    if request.method == "POST":
+        poll.delete()
+        return redirect("anket:teacher_poll") 
+
+    return render(request, "anket/delete.html", {"poll": poll})
+
+
+
+
+
 

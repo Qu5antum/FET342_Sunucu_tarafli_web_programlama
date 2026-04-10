@@ -10,9 +10,9 @@
 <form method="post">
     {% csrf_token %}
 
-    <input type="text" name="title" placeholder="Title" required><br><br>
+    <input type="text" name="title" placeholder="İsim" required><br><br>
 
-    <textarea name="description" placeholder="Description"></textarea><br><br>
+    <textarea name="description" placeholder="Tanım"></textarea><br><br>
 
     <label>Gruplar:</label><br>
     {% for group in groups %}
@@ -62,17 +62,17 @@ function render() {
         let qDiv = document.createElement("div")
 
         qDiv.innerHTML = `
-            <input type="text" placeholder="Question"
+            <input type="text" placeholder="Soru"
                 onchange="updateQuestionText(${qIndex}, this.value)">
 
             <div>
                 ${q.options.map((opt, oIndex) => `
-                    <input type="text" placeholder="Option"
+                    <input type="text" placeholder="Seçenek"
                         onchange="updateOption(${qIndex}, ${oIndex}, this.value)">
                 `).join("")}
             </div>
 
-            <button type="button" onclick="addOption(${qIndex})">+ Option</button>
+            <button type="button" onclick="addOption(${qIndex})">+ Seçenek</button>
             <hr>
         `
 
