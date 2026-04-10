@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ poll.title }}</h2>
+
+<p><strong>Teşekkürler, {{ user.username }}! Oylarınız kaydedildi.</strong></p>
+
+<hr>
+
+{% for question in questions %}
+    <div style="margin-bottom: 40px;">
+        <h4>{{ question.text }}</h4>
+
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>Seçenek</th>
+                <th>Oy sayısı</th>
+            </tr>
+
+            {% for option in question.options %}
+            <tr>
+                <td>{{ option.text }}</td>
+                <td>{{ option.vote_count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <canvas id="{{ question.id }}" width="400" height="200"></canvas>
+    </div>
+{% endfor %}
+
+
+{% endblock %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ poll.title }}</title>
+</head>
+<body>
+
+<h2>{{ poll.title }}</h2>
+<p>{{ poll.description }}</p>
+
+<form method="post" action="{% url 'anket:vote' poll.id %}">
+    {% csrf_token %}
+
+    {% for question in poll.question_set.all %}
+        <div style="margin-bottom: 20px;">
+            <p><strong>{{ question.text }}</strong></p>
+
+            {% for option in question.option_set.all %}
+                <label>
+                    <input type="radio"
+                           name="question_{{ question.id }}"
+                           value="{{ option.id }}">
+                    {{ option.text }}
+                </label><br>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <button type="submit">Oy Gönder</button>
+</form>
+
+</body>
+</html>

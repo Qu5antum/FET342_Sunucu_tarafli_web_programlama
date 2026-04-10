@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anket listesi</title>
+</head>
+<body>
+
+{% if perms.anket.add_poll %}
+    <a href="{% url 'anket:create_poll' %}">
+        <button>Anket Oluştur</button>
+    </a>
+    <hr>
+{% endif %}
+
+<h2>Mevcut Anketler</h2>
+
+{% if polls %}
+    <ul>
+        {% for poll in polls %}
+            <li>
+                <h3>{{ poll.title }}</h3>
+                <p>Tanım: {{ poll.description }}</p>
+                <p>Oluşum tarihi: {{ poll.created_at }}</p>
+
+                <a href="/polls/{{ poll.id }}/">Anketi Aç</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+{% else %}
+    <p>Anket mevcut değil.</p>
+{% endif %}
+
+
+</body>
+</html>

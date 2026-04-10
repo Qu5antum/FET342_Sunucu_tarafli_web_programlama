@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anket</title>
+</head>
+<body>
+
+<h2>Anket Oluştur</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <input type="text" name="title" placeholder="Title" required><br><br>
+
+    <textarea name="description" placeholder="Description"></textarea><br><br>
+
+    <label>Gruplar:</label><br>
+    {% for group in groups %}
+        <input type="checkbox" name="groups" value="{{ group.id }}">
+        {{ group.name }}<br>
+    {% endfor %}
+
+    <hr>
+
+    <div id="questions"></div>
+
+    <button type="button" onclick="addQuestion()">+ Soru</button>
+
+    <br><br>
+
+    <input type="hidden" name="questions" id="questionsInput">
+
+    <button type="submit" onclick="prepareData()">Oluştur</button>
+</form>
+
+<script>
+let questions = []
+
+function addQuestion() {
+    questions.push({ text: "", options: [""] })
+    render()
+}
+
+function addOption(qIndex) {
+    questions[qIndex].options.push("")
+    render()
+}
+
+function updateQuestionText(index, value) {
+    questions[index].text = value
+}
+
+function updateOption(qIndex, oIndex, value) {
+    questions[qIndex].options[oIndex] = value
+}
+
+function render() {
+    const container = document.getElementById("questions")
+    container.innerHTML = ""
+
+    questions.forEach((q, qIndex) => {
+        let qDiv = document.createElement("div")
+
+        qDiv.innerHTML = `
+            <input type="text" placeholder="Question"
+                onchange="updateQuestionText(${qIndex}, this.value)">
+
+            <div>
+                ${q.options.map((opt, oIndex) => `
+                    <input type="text" placeholder="Option"
+                        onchange="updateOption(${qIndex}, ${oIndex}, this.value)">
+                `).join("")}
+            </div>
+
+            <button type="button" onclick="addOption(${qIndex})">+ Option</button>
+            <hr>
+        `
+
+        container.appendChild(qDiv)
+    })
+}
+
+function prepareData() {
+    document.getElementById("questionsInput").value = JSON.stringify(questions)
+}
+</script>
+
+</body>
+</html>

@@ -30,7 +30,7 @@ class Vote(models.Model):
     class Meta:
         unique_together = ('user', 'poll', 'question')
 
-# kullanicinin 1 sadece 1 kez oy yapabilmesi
+# kullanicinin sadece 1 kez oy yapabilmesi
 class PollParticipation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
