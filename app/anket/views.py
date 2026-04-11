@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.db.models import Count, Max
+from django.db.models import Count
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 import json
@@ -51,7 +51,7 @@ def create_poll(request):
                 for opt in q.get("options", [])
             ])
 
-        return redirect("poll_list") 
+        return redirect("anket:polls") 
 
     groups = Group.objects.all()
     return render(request, "anket/create_poll.html", {"groups": groups})
@@ -176,6 +176,7 @@ def list_poll_of_students_for_teacher(request):
 
 
 # oy özetleme
+@login_required
 def poll_summary_dashboard(request, poll_id):
     poll = get_object_or_404(Poll, pk=poll_id)
 
@@ -260,9 +261,3 @@ def delete_poll(request, poll_id):
         return redirect("anket:teacher_poll") 
 
     return render(request, "anket/delete.html", {"poll": poll})
-
-
-
-
-
-

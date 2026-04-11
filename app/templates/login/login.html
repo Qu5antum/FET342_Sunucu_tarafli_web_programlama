@@ -1,10 +1,65 @@
-<h2>Login Sayfası</h2>
+<div>
+    <h2>Login Sayfası</h2>
 
-<form method="post">
-  {% csrf_token %}
-  
-  <input type="text" name="username" placeholder="Username">
-  <input type="password" name="password" placeholder="Password">
-  
-  <button type="submit">Login</button>
-</form>
+    <form method="post">
+    {% csrf_token %}
+    
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
+    
+    <button type="submit">Login</button>
+    </form>
+</div>
+<style>
+    
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: white;
+    font-family: 'Segoe UI', sans-serif;
+}
+form {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    box-sizing: border-box; 
+    transition: all 0.3s ease;
+    outline: none;
+}
+input:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 8px rgba(118, 75, 162, 0.2);
+}
+button {
+    background: #764ba2;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+</style>

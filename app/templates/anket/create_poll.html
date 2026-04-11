@@ -87,3 +87,88 @@ function prepareData() {
 
 </body>
 </html>
+
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f0f2f5;
+    padding: 40px;
+    color: #2c3e50;
+}
+h2 {
+    color: #1a3a5f;
+    border-bottom: 3px solid #1a3a5f;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+input[type="text"], textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+label {
+    font-weight: bold;
+    color: #1a3a5f;
+    display: block;
+    margin-top: 15px;
+}
+input[type="checkbox"] {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+#questions > div {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border-left: 5px solid #3498db;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+#questions div div {
+    margin-left: 20px;
+    border-left: none;
+    padding: 0;
+}
+
+#questions input[placeholder="Seçenek"] {
+    width: 90%;
+    background-color: #fafafa;
+    border-style: dashed; 
+}
+button {
+    background-color: #1a3a5f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+button[onclick="addQuestion()"] {
+    background-color: #27ae60; /* Soru ekleme butonu yeşil */
+}
+button[onclick="addQuestion()"]:hover {
+    background-color: #219150;
+}
+button[type="submit"] {
+    background-color: #1a3a5f;
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    margin-top: 20px;
+    text-transform: uppercase;
+}
+button:hover {
+    opacity: 0.9;
+}
+</style>
