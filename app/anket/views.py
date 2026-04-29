@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.db.models import Count
@@ -17,6 +18,11 @@ def in_editor_group(user):
 # giris icin view
 class CustomLoginView(LoginView):
     template_name = "login/login.html"
+
+# çıkış için view
+def logout_user(request):
+    logout(request)
+    return redirect("login/login.html")
 
 # anket oluşturma (sadece hocalar görebilir)
 @login_required
@@ -258,6 +264,6 @@ def delete_poll(request, poll_id):
 
     if request.method == "POST":
         poll.delete()
-        return redirect("anket:teacher_poll") 
+        return redirect("anket:student_poll") 
 
     return render(request, "anket/delete.html", {"poll": poll})

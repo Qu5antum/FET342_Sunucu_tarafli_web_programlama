@@ -5,6 +5,16 @@
 </head>
 <body>
 
+<div class="upper_bar">
+    <div class="nav-container">
+        <a href="{% url 'anket:polls' %}">Geri</a>
+        
+        <div class="nav-right">
+            <a href="/accounts" class="nav-link">Hesabım</a>
+        </div>
+    </div>
+</div>
+
 <h2>Anket Oluştur</h2>
 
 <form method="post">
@@ -30,7 +40,7 @@
 
     <input type="hidden" name="questions" id="questionsInput">
 
-    <button type="submit" onclick="prepareData()">Oluştur</button>
+    <button type="submit" onclick="prepareData()">Oluştur</button>  
 </form>
 
 <script>
@@ -81,7 +91,8 @@ function render() {
 }
 
 function prepareData() {
-    document.getElementById("questionsInput").value = JSON.stringify(questions)
+    alert("Anket başarıyla oluşturuldu");
+    document.getElementById("questionsInput").value = JSON.stringify(questions);
 }
 </script>
 
@@ -90,85 +101,140 @@ function prepareData() {
 
 <style>
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f0f2f5;
-    padding: 40px;
-    color: #2c3e50;
+font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+background-color: #f0f2f5;
+color: #2c3e50;
+margin: 0;
+padding: 100px 20px 40px 20px;
+display: flex;
+flex-direction: column;
+align-items: center;
 }
-h2 {
-    color: #1a3a5f;
-    border-bottom: 3px solid #1a3a5f;
-    padding-bottom: 10px;
-    margin-bottom: 30px;
+.upper_bar {
+background-color: #1a3a5f;
+height: 60px;
+width: 100%;
+position: fixed;
+top: 0;
+left: 0;
+z-index: 1100;
+display: flex;
+align-items: center;
+box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
-input[type="text"], textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 14px;
+.nav-container {
+width: 100%;
+max-width: 1200px;
+margin: 0 auto;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0 20px;
 }
-textarea {
-    height: 80px;
-    resize: vertical;
+.nav-right {
+display: flex;
+align-items: center;
+gap: 10px; 
 }
-label {
-    font-weight: bold;
-    color: #1a3a5f;
-    display: block;
-    margin-top: 15px;
+.nav-container a, 
+.nav-link, 
+.logout-btn {
+font-family: 'Segoe UI', Arial, sans-serif;
+font-size: 14px;
+font-weight: 600;
+padding: 0 16px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+border-radius: 4px;
+transition: all 0.3s ease;
+height: 36px; 
+box-sizing: border-box;
+text-decoration: none;
+line-height: 1;
+border: none;
+margin: 0;
 }
-input[type="checkbox"] {
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-#questions > div {
-    background: #ffffff;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    border-left: 5px solid #3498db;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-#questions div div {
-    margin-left: 20px;
-    border-left: none;
-    padding: 0;
+.nav-container a, .nav-link {
+color: #ffffff;
+background-color: transparent;
 }
 
+.nav-container a:hover {
+background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
+background-color: #c0392b;
+color: white;
+cursor: pointer;
+vertical-align: middle;
+}
+.logout-btn:hover {
+background-color: #e74c3c;
+}
+.logoutForm {
+display: inline-flex;
+margin: 0;
+vertical-align: middle;
+}
+h2 {
+color: #1a3a5f;
+width: 100%;
+max-width: 800px;
+border-bottom: 3px solid #1a3a5f;
+padding-bottom: 10px;
+margin-bottom: 30px;
+text-transform: uppercase;
+}
+form:not(.logoutForm) {
+width: 100%;
+max-width: 800px;
+}
+input[type="text"], textarea {
+width: 100%;
+padding: 12px;
+margin: 10px 0;
+border: 1px solid #ccc;
+border-radius: 6px;
+box-sizing: border-box;
+font-size: 15px;
+}
+textarea { height: 80px; resize: vertical; }
+label {
+font-weight: bold;
+color: #1a3a5f;
+display: block;
+margin-top: 15px;
+}
+#questions > div {
+background: #ffffff;
+padding: 20px;
+margin-bottom: 20px;
+border-radius: 8px;
+border-left: 6px solid #3498db;
+box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
 #questions input[placeholder="Seçenek"] {
-    width: 90%;
-    background-color: #fafafa;
-    border-style: dashed; 
+background-color: #f9f9f9;
+border-style: dashed;
+width: 90%;
+margin-left: 20px;
 }
-button {
-    background-color: #1a3a5f;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s;
-    margin-top: 10px;
+.add-btn {
+background-color: #27ae60;
+color: white;
+padding: 10px 20px;
+margin-bottom: 10px;
 }
-button[onclick="addQuestion()"] {
-    background-color: #27ae60; /* Soru ekleme butonu yeşil */
+.submit-btn {
+background-color: #1a3a5f;
+color: white;
+width: 100%;
+padding: 15px;
+font-size: 16px;
+margin-top: 20px;
+text-transform: uppercase;
 }
-button[onclick="addQuestion()"]:hover {
-    background-color: #219150;
-}
-button[type="submit"] {
-    background-color: #1a3a5f;
-    width: 100%;
-    padding: 15px;
-    font-size: 16px;
-    margin-top: 20px;
-    text-transform: uppercase;
-}
-button:hover {
-    opacity: 0.9;
-}
+button:hover { opacity: 0.9; }
 </style>

@@ -1,95 +1,201 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+    <meta charset="UTF-8">
     <title>{{ poll.title }}</title>
 </head>
 <body>
 
-<h2>{{ poll.title }}</h2>
-<p>{{ poll.description }}</p>
-
-<form method="post" action="{% url 'anket:vote' poll.id %}">
-    {% csrf_token %}
-
-    {% for question in poll.question_set.all %}
-        <div style="margin-bottom: 20px;">
-            <p><strong>{{ question.text }}</strong></p>
-
-            {% for option in question.option_set.all %}
-                <label>
-                    <input type="radio"
-                           name="question_{{ question.id }}"
-                           value="{{ option.id }}">
-                    {{ option.text }}
-                </label><br>
-            {% endfor %}
+<div class="upper_bar">
+    <div class="nav-container">
+        <a href="{% url 'anket:polls' %}">Geri</a>
+        
+        <div class="nav-right">
+            <a href="/accounts" class="nav-link">Hesabım</a>
         </div>
-    {% endfor %}
+    </div>
+</div>
 
-    <button type="submit">Oy Gönder</button>
-</form>
+<div class="content-wrapper">
+    <h2>{{ poll.title }}</h2>
+    <p class="poll-description">{{ poll.description }}</p>
+
+    <form method="post" action="{% url 'anket:vote' poll.id %}">
+        {% csrf_token %}
+
+        {% for question in poll.question_set.all %}
+            <div class="question-card">
+                <span class="question-text">{{ question.text }}</span>
+
+                {% for option in question.option_set.all %}
+                    <label>
+                        <input type="radio"
+                               name="question_{{ question.id }}"
+                               value="{{ option.id }}" required>
+                        {{ option.text }}
+                    </label>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="submit-btn">Oyu Gönder</button>
+    </form>
+</div>
 
 </body>
 </html>
 
 <style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    margin: 0;
+    padding: 100px 20px 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.upper_bar {
+    background-color: #1a3a5f;
+    height: 60px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+.nav-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+.nav-container a, 
+.nav-link, 
+.logout-btn {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    height: 36px;
+    box-sizing: border-box;
+    text-decoration: none;
+    line-height: 1;
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+}
+.nav-container a:hover, .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+.logout-btn {
+    background-color: #c0392b;
+}
+.logout-btn:hover {
+    background-color: #e74c3c;
+}
+.logoutForm {
+    display: inline-flex;
+    margin: 0;
+}
+.content-wrapper {
+    width: 100%;
+    max-width: 700px;
+}
 h2 {
     color: #1a3a5f;
-    margin-bottom: 5px;
-    font-size: 28px;
+    margin: 0 0 10px 0;
+    font-size: 32px;
+    font-weight: 700;
 }
-p {
+.poll-description {
     color: #666;
-    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 35px;
 }
-div[style*="margin-bottom: 20px;"] {
+.question-card {
     background: #fff;
-    padding: 20px;
-    margin-bottom: 25px !important;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border-top: 4px solid #3498db; 
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-top: 5px solid #3498db;
+    transition: transform 0.2s ease;
 }
-div p strong {
+.question-card:hover {
+    transform: translateY(-2px);
+}
+.question-text {
     display: block;
-    font-size: 18px;
+    font-size: 20px;
     color: #1a3a5f;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 label {
-    display: block; 
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    background-color: #f9f9f9;
     border: 1px solid #eee;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 16px;
 }
 label:hover {
-    background: #eef6fc;
+    background-color: #eef6fc;
     border-color: #3498db;
 }
-input[type="radio"] {
-    margin-right: 12px;
-    transform: scale(1.2);
-    vertical-align: middle;
+label:has(input[type="radio"]:checked) {
+    background-color: #eef6fc;
+    border-color: #3498db;
+    font-weight: 600;
+    color: #2980b9;
 }
-button[type="submit"] {
-    background-color: #27ae60; 
+input[type="radio"] {
+    margin-right: 15px;
+    width: 18px;
+    height: 18px;
+    accent-color: #3498db; 
+    cursor: pointer;
+}
+.submit-btn {
+    background-color: #27ae60;
     color: white;
     border: none;
-    padding: 15px 30px;
-    border-radius: 5px;
+    padding: 16px 32px;
+    border-radius: 8px;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
     width: 100%;
-    transition: background 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
-button[type="submit"]:hover {
+.submit-btn:hover {
     background-color: #219150;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+    transform: translateY(-1px);
+}
+.submit-btn:active {
+    transform: translateY(1px);
 }
 </style>

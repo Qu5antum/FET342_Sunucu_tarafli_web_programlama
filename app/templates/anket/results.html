@@ -1,101 +1,140 @@
 {% block content %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sonuçlar - {{ poll.title }}</title>
+</head>
+<body>
 
-<h2>{{ poll.title }}</h2>
-
-<p><strong>Teşekkürler, {{ user.username }}! Oylarınız kaydedildi.</strong></p>
-
-<hr>
-{% if perms.anket.view_poll %}
-    <a href="{% url 'anket:export_poll' poll.id %}">
-        <button>CSV İndir</button>
-    </a>
-{% endif %}
-
-{% for question in questions %}
-    <div style="margin-bottom: 40px;">
-        <h4>{{ question.text }}</h4>
-
-        <table border="1" cellpadding="8">
-            <tr>
-                <th>Seçenek</th>
-                <th>Oy sayısı</th>
-            </tr>
-
-            {% for option in question.options %}
-            <tr>
-                <td>{{ option.text }}</td>
-                <td>{{ option.vote_count }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+    <div class="upper_bar">
+        <div class="nav-container">
+            <a href="{% url 'anket:polls' %}">Geri</a>
+            <div style="display: flex; gap: 15px;">
+                <a href="/accounts">Hesabım</a>
+            </div>
+        </div>
     </div>
-{% endfor %}
 
+    <div class="container">
+        <h2>{{ poll.title }}</h2>
+        <div class="success-msg">
+            Oylarınız başarıyla kaydedildi. Teşekkürler, <strong>{{ user.username }}</strong>!
+        </div>
 
+        {% if perms.anket.view_poll %}
+            <a href="{% url 'anket:export_poll' poll.id %}" class="csv-btn">CSV İndir</a>
+        {% endif %}
+
+        {% for question in questions %}
+            <div class="card">
+                <h4>{{ question.text }}</h4>
+
+                {% for option in question.options %}
+                    <div class="option-item">
+                        <div class="option-text">
+                            <span>{{ option.text }}</span>
+                            <span style="color: #888;">{{ option.vote_count }} Oy</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: {{ option.vote_count }}%;"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
 {% endblock %}
-
 <style>
-h2 {
-    color: #1a3a5f;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 15px;
-}
-p strong {
-    display: block;
-    background-color: #d4edda; 
-    color: #155724;
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 6px solid #28a745;
-    margin: 20px 0;
-}
-button {
-    background-color: #2c3e50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 20px;
-    transition: background 0.3s;
-}
-button:hover {
-    background-color: #34495e;
-}
-div[style*="margin-bottom: 40px;"] {
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    margin-bottom: 30px !important;
-}
-h4 {
-    color: #1a3a5f;
-    font-size: 1.2rem;
-    margin-top: 0;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-table, th, td {
-    border: 1px solid #eaeff2 !important;
-}
-th {
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
     background-color: #f8f9fa;
-    color: #1a3a5f;
-    text-align: left;
-    padding: 12px;
-}
-td {
-    padding: 12px;
     color: #333;
+    margin: 0;
+    padding: 80px 20px; 
+    display: flex;
+    justify-content: center;
 }
-tr:nth-child(even) {
-    background-color: #fcfcfc;
+.container {
+    width: 100%;
+    max-width: 900px;
+}
+.upper_bar {
+    background-color: #1a3a5f;
+    height: 55px;
+    width: 100%;
+    position: fixed;
+    top: 0; left: 0;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+}
+.nav-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.nav-container a, .logout-btn {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.logout-btn { color: #ff7675; }
+h2 { color: #1a3a5f; margin-bottom: 5px; }
+.success-msg {
+    color: #155724;
+    background-color: #d4edda;
+    padding: 15px;
+    border-radius: 6px;
+    margin: 20px 0;
+    font-size: 15px;
+}
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+h4 { color: #2d3e50; margin-top: 0; margin-bottom: 15px; }
+.option-item {
+    margin-bottom: 12px;
+}
+.option-text {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+.bar-container {
+    background-color: #eee;
+    height: 8px;
+    border-radius: 4px;
+    width: 100%;
+}
+.bar-fill {
+    background-color: #3498db;
+    height: 100%;
+    border-radius: 4px;
+}
+.csv-btn {
+    display: inline-block;
+    background-color: #2d3e50;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 20px;
 }
 </style>

@@ -1,57 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Anket listesi</title>
+    <meta charset="UTF-8">
+    <title>Anket Listesi</title>
 </head>
 <body>
 
-<h2>Mevcut Anketler</h2>
+<div class="upper_bar">
+    <div class="nav-container">
+        <a href="{% url 'anket:polls' %}" class="nav-link">Geri</a>
+        
+        <div class="nav-right">
+            <a href="/accounts" class="nav-link">Hesabım</a>
+        </div>
+    </div>
+</div>
 
-{% if polls %}
-    <ul>
-        {% for poll in polls %}
-            <li>
-                <h3>{{ poll.title }}</h3>
-                <p>Tanım: {{ poll.description }}</p>
-                <p>Oluşum tarihi: {{ poll.created_at }}</p>
-                
-                <a href="{% url 'anket:poll_summary' poll.id %}">
-                    <button>Özeti gör</button>
-                </a>
+<div class="content-wrapper">
+    <h2>Öğrencilerin Mevcut Anketleri</h2>
 
-                <form method="post" action="{% url 'anket:delete_poll' poll.id %}" style="display:inline;">
-                    {% csrf_token %}
+    {% if polls %}
+        <ul>
+            {% for poll in polls %}
+                <li>
+                    <h3>{{ poll.title }}</h3>
+                    <p><strong>Tanım:</strong> {{ poll.description }}</p>
+                    <p><strong>Oluşum tarihi:</strong> {{ poll.created_at }}</p>
+                    
+                    <div style="margin-top: 15px;">
+                        <a href="{% url 'anket:poll_summary' poll.id %}" class="action-btn">Özeti gör</a>
 
-                    <button type="submit"
-                            onclick="return confirm('Bu anketi silmek istiyor musun?')">
-                        Sil
-                    </button>
-                </form>
-            
-                {% if perms.anket.view_poll %}
-                    <div style="margin-top:10px;">
-                        <form method="get" action="{% url 'anket:export_poll' poll.id %}">
-                            
-                            <label>Dışa aktarma biçimi:</label>
-
-                            <select name="format">
-                                <option value="csv">CSV</option>
-                            </select>
-
-                            <button type="submit">
-                                İndir
+                        <form method="post" action="{% url 'anket:delete_poll' poll.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn"
+                                    onclick="return confirm('Bu anketi silmek istiyor musun?')">
+                                Sil
                             </button>
                         </form>
                     </div>
-                {% endif %}
 
-            </li>
-        {% endfor %}
-    </ul>
-
-{% else %}
-    <p>Anket mevcut değil.</p>
-{% endif %}
+                    {% if perms.anket.view_poll %}
+                        <div class="export-box">
+                            <form method="get" action="{% url 'anket:export_poll' poll.id %}">
+                                <label style="font-size: 13px; font-weight: bold;">Dışa aktarma biçimi:</label>
+                                <select name="format">
+                                    <option value="csv">CSV</option>
+                                </select>
+                                <button type="submit">İndir</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="text-align: center; color: #7f8c8d; margin-top: 50px;">Henüz bir anket mevcut değil.</p>
+    {% endif %}
+</div>
 
 </body>
 </html>
@@ -62,7 +67,45 @@ body {
     background-color: #f0f2f5;
     color: #2c3e50;
     margin: 0;
-    padding: 40px;
+    padding: 100px 40px 40px 40px; 
+}
+.upper_bar {
+    background-color: #1a3a5f; 
+    height: 60px;
+    width: 100%;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.nav-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 h2 {
     color: #1a3a5f; 
@@ -71,6 +114,13 @@ h2 {
     margin-bottom: 30px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.content-wrapper {
+    max-width: 100%;
+    margin: 0 auto;
 }
 ul {
     list-style-type: none;
@@ -98,7 +148,7 @@ li p {
     color: #555;
     margin: 5px 0;
 }
-button {
+button, .action-btn {
     background-color: #1a3a5f;
     color: white;
     border: none;
@@ -109,25 +159,27 @@ button {
     font-size: 14px;
     transition: background 0.3s;
     margin-right: 10px;
+    text-decoration: none;
+    display: inline-block;
 }
-button:hover {
+button:hover, .action-btn:hover {
     background-color: #2c5282;
 }
-a[href*="/polls/"] {
-    display: inline-block;
-    margin-top: 10px;
-    color: #1a3a5f;
-    text-decoration: none;
-    font-weight: bold;
-    border-bottom: 1px solid transparent;
+.delete-btn {
+    background-color: #c0392b;
 }
-a[href*="/polls/"]:hover {
-    border-bottom: 1px solid #1a3a5f;
+.delete-btn:hover {
+    background-color: #e74c3c;
 }
-hr {
-    border: 0;
-    height: 1px;
-    background: #ccc;
-    margin: 20px 0;
+.export-box {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
 }
 </style>
