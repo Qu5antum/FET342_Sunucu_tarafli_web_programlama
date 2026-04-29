@@ -268,4 +268,11 @@ def delete_poll(request, poll_id):
 
     return render(request, "anket/delete.html", {"poll": poll})
 
+# kullanicinin kendi hesabi gorunteleme
+@login_required
+def get_my_info(request):
+    context = {
+        'user': request.user
+    }
 
+    return render(request, 'anket/account.html', context)

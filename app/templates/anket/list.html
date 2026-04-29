@@ -17,7 +17,7 @@
         </div>
         
         <div class="nav-right">
-            <a href="/accounts" class="nav-link">Hesabım</a>
+            <a href="/account" class="nav-link">Hesabım</a>
             <form action="{% url 'anket:logout' %}" method="post" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="logout-btn">Çıkış Yap</button>

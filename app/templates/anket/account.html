@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hesabım</title>
+</head>
+<body>
+
+    <nav class="upper_bar">
+        <div class="nav-container">
+            <a href="{% url 'anket:polls' %}" class="back-link">Geri Dön</a>
+            <div class="nav-right">
+                <form action="{% url 'anket:logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Çıkış Yap</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="account-card">
+        <div class="card-header">
+            <div>
+                <h2>Profil Bilgileri</h2>
+            </div>
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">E-posta Adresi</span>
+            <div class="info-value">{{ user.email|default:"E-posta belirtilmedi" }}</div>
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">Telefon Numarası</span>
+            <div class="info-value">{{ user.phone|default:"Numara kayıtlı değil" }}</div>
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">Hesap Durumu</span>
+            <div class="badge-container">
+                {% if user.is_active %}
+                    <span class="badge">Aktif Kullanıcı</span>
+                {% endif %}
+                {% if user.is_staff %}
+                    <span class="badge badge-admin">Yönetici</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="info-group" style="margin-bottom: 0;">
+            <span class="info-label">Kayıt Tarihi</span>
+            <div style="color: #64748b; font-size: 14px; padding-left: 2px;">
+                {{ user.date_joined|date:"d F Y" }} tarihinde katıldı.
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
+
+<style>
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f4f7fa;
+    color: #334155;
+    margin: 0;
+    padding: 100px 20px 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+.upper_bar {
+    background-color: #1a3a5f; 
+    height: 60px;
+    width: 100%;
+    position: fixed; 
+    top: 0; left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.nav-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+}
+.back-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.back-link:hover {
+    opacity: 0.8;
+}
+.logout-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+.logout-btn:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+}
+.account-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 20px;
+}
+h2 {
+    color: #1e293b;
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+}
+.info-group {
+    margin-bottom: 24px;
+}
+.info-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.info-value {
+    font-size: 15px;
+    color: #1e293b;
+    background: #f8fafc;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: border-color 0.2s;
+}
+.info-value:hover {
+    border-color: #cbd5e1;
+}
+.badge-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+}
+.badge {
+    padding: 5px 12px;
+    background: #dcfce7;
+    color: #166534;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.badge-admin {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+</style>
