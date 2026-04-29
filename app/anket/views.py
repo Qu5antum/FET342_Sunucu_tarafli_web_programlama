@@ -267,3 +267,5 @@ def delete_poll(request, poll_id):
         return redirect("anket:student_poll") 
 
     return render(request, "anket/delete.html", {"poll": poll})
+
+

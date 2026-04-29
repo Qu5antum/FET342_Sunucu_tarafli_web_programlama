@@ -1,7 +1,10 @@
 from django.db import models
 
 # Kullanici gruplar (student ve teacher) django nun kendi default modelleri
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Anket modeli
 class Poll(models.Model):

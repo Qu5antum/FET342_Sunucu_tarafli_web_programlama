@@ -19,7 +19,7 @@
     <div class="container">
         <h2>{{ poll.title }}</h2>
         <div class="success-msg">
-            Oylarınız başarıyla kaydedildi. Teşekkürler, <strong>{{ user.username }}</strong>!
+            Oylarınız başarıyla kaydedildi. Teşekkürler, <strong>{{ user.email }}</strong>!
         </div>
 
         {% if perms.anket.view_poll %}

@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'users.apps.UsersConfig',
     'anket.apps.AnketConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -125,5 +126,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = "/polls/"
 LOGOUT_REDIRECT_URL = "/login/"
+
+AUTH_USER_MODEL = 'users.User'
 
 
