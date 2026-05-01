@@ -31,6 +31,7 @@
     {% endfor %}
 
     <label>Görünürlük</label><br>
+
     {% for value, label in visibilities %}
         <input type="radio" name="visibility" value="{{ value }}"
             {% if value == "private" %}checked{% endif %}>
@@ -98,7 +99,6 @@ function render() {
 }
 
 function prepareData() {
-    alert("Anket başarıyla oluşturuldu");
     document.getElementById("questionsInput").value = JSON.stringify(questions);
 }
 </script>

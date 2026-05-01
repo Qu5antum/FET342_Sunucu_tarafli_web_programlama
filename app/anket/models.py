@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Kullanici gruplar (student ve teacher) django nun kendi default modelleri
 from django.contrib.auth.models import Group
@@ -9,6 +10,11 @@ User = get_user_model()
 class Visibility(models.TextChoices):
     PRIVATE = 'private', 'Private'
     PUBLIC = 'public', 'Public'
+    
+
+class Permission(models.TextChoices):
+    EDIT = 'Edit', 'edit'
+    VOTE = 'Vote', 'vote'
 
 # Anket modeli
 class Poll(models.Model):
@@ -23,6 +29,22 @@ class Poll(models.Model):
     )
 
     created_at = models.DateField(auto_now_add=True)
+
+
+# Anketi paylaşmak için link oluşturması
+class PollShare(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+
+    permission = models.CharField(
+        max_length=20,
+        choices=Permission.choices,
+        default=Permission.EDIT
+    )
+
+    created_at = models.DateField(auto_now_add=True)
+    
 
 # Soru modeli
 class Question(models.Model):

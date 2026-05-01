@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
@@ -7,10 +7,11 @@ from django.db import transaction
 from django.db.models import Count
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
+from django.urls import reverse
 import json
 import csv
 
-from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility
+from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility, PollShare
 from .form import UserAuthenticationForm
 
 def in_editor_group(user):
@@ -26,14 +27,29 @@ def logout_user(request):
     logout(request)
     return redirect("login/login.html")
 
+
+def generate_share_link(request, poll):
+    share = PollShare.objects.create(poll=poll)
+
+    url = request.build_absolute_uri(
+        reverse("anket:poll_by_token", args=[str(share.token)])
+    )
+
+    return url
+
 # anket oluşturma (sadece hocalar görebilir)
 @login_required
 @transaction.atomic
 def create_poll(request):
+    url = None
+
     if request.method == "POST":
         title = request.POST.get("title")
         description = request.POST.get("description")
         visibility = request.POST.get("visibility", Visibility.PRIVATE)
+
+        if visibility not in Visibility.values:
+            visibility = Visibility.PRIVATE
 
         group_ids = request.POST.getlist("groups")
 
@@ -60,14 +76,42 @@ def create_poll(request):
                 for opt in q.get("options", [])
             ])
 
-        return redirect("anket:polls") 
+        
+        if poll.visibility == Visibility.PRIVATE:
+            url = generate_share_link(request, poll)
 
-    groups = Group.objects.all()
+        return render(request, "anket/created_poll.html", {
+            "poll": poll,
+            "url": url
+        })    
+
     return render(request, "anket/create_poll.html", {
-        "groups": groups,
-        "visibilities": Visibility.choices
+        "groups": Group.objects.all(),
+        "visibilities": Visibility.choices,
+        "url": None
     })
 
+# kapali ankete katilma linki 
+@login_required
+def poll_by_token(request, token):
+    try:
+        share = PollShare.objects.select_related("poll").get(token=token)
+    except PollShare.DoesNotExist:
+        raise Http404
+    
+    poll = share.poll
+    user = request.user
+
+    has_group_access = poll.groups.filter(
+        id__in=user.groups.all()
+    ).exists()
+
+    if not has_group_access:
+        return HttpResponseForbidden("Bu ankete erişim izniniz yok")
+
+    return render(request, "anket/poll_detail.html", {
+        "poll": poll
+    })
     
 # anketlerin listelenme sayfasi
 @login_required

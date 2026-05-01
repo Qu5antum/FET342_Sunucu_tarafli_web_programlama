@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
-from .views import CustomLoginView, poll_list, poll_detail, vote, poll_results, create_poll, import_csv, list_poll_of_students_for_teacher, poll_summary_dashboard, delete_poll, get_my_info
+from .views import CustomLoginView, poll_list, poll_detail, vote, poll_results, create_poll, import_csv, list_poll_of_students_for_teacher, poll_summary_dashboard, delete_poll, get_my_info, poll_by_token
 
 app_name = "anket"
 
@@ -9,6 +9,7 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(), name='logout'),
     path("account/", get_my_info, name="account"),
     path("polls/", poll_list, name="polls"),
+    path("poll/<uuid:token>/", poll_by_token, name="poll_by_token"),
     path("polls/<int:poll_id>/", poll_detail, name="poll_detail"),
     path("polls/<int:poll_id>/vote/", vote, name="vote"),
     path("polls/<int:poll_id>/results/", poll_results, name="poll_results"),
