@@ -12,8 +12,12 @@
         <div class="nav-left">
             {% if perms.anket.add_poll %}
                 <a href="{% url 'anket:create_poll' %}">Anket Oluştur</a>
-                <a href="{% url 'anket:student_poll' %}">Öğrenci Anketleri</a>
             {% endif %}
+            {% for group in request.user.groups.all %}
+                {% if group.name == "teacher" %}
+                    <a href="{% url 'anket:student_poll' %}">Öğrenci Anketleri</a>
+                {% endif %}
+            {% endfor %}
         </div>
         
         <div class="nav-right">

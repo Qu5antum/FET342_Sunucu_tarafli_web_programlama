@@ -10,7 +10,8 @@ from django.contrib.auth.decorators import user_passes_test
 import json
 import csv
 
-from .models import Poll, PollParticipation, Option, Vote, Group, Question, User
+from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility
+from .form import UserAuthenticationForm
 
 def in_editor_group(user):
     return user.groups.filter(name='teacher').exists()
@@ -18,6 +19,7 @@ def in_editor_group(user):
 # giris icin view
 class CustomLoginView(LoginView):
     template_name = "login/login.html"
+    authentication_form = UserAuthenticationForm
 
 # çıkış için view
 def logout_user(request):
@@ -26,18 +28,19 @@ def logout_user(request):
 
 # anket oluşturma (sadece hocalar görebilir)
 @login_required
-@user_passes_test(in_editor_group)
 @transaction.atomic
 def create_poll(request):
     if request.method == "POST":
         title = request.POST.get("title")
         description = request.POST.get("description")
+        visibility = request.POST.get("visibility", Visibility.PRIVATE)
 
         group_ids = request.POST.getlist("groups")
 
         poll = Poll.objects.create(
             title=title,
-            description=description
+            description=description,
+            visibility=visibility
         )
 
         groups = Group.objects.filter(id__in=group_ids)
@@ -60,15 +63,19 @@ def create_poll(request):
         return redirect("anket:polls") 
 
     groups = Group.objects.all()
-    return render(request, "anket/create_poll.html", {"groups": groups})
+    return render(request, "anket/create_poll.html", {
+        "groups": groups,
+        "visibilities": Visibility.choices
+    })
 
     
 # anketlerin listelenme sayfasi
 @login_required
 def poll_list(request):
     polls = Poll.objects.filter(
-        # student yada teacher olarak gruplara filtreleme
-        groups__in=request.user.groups.all()
+        # student yada teacher olarak gruplara filtreleme, ve sadece public olanlari gosterme
+        groups__in=request.user.groups.all(),
+        visibility=Visibility.PUBLIC
     ).distinct()
 
     return render(request, "anket/list.html", {"polls": polls})
@@ -175,8 +182,12 @@ def import_csv(request, poll_id):
 
 
 @login_required
+@user_passes_test(in_editor_group)
 def list_poll_of_students_for_teacher(request):
-    polls = Poll.objects.filter(groups__name="student")
+    polls = Poll.objects.filter(
+        groups__name="student",
+        visibility = Visibility.PUBLIC
+    )
 
     return render(request, "anket/teacher_poll_list.html", {"polls": polls})
 

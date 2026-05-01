@@ -6,11 +6,22 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+class Visibility(models.TextChoices):
+    PRIVATE = 'private', 'Private'
+    PUBLIC = 'public', 'Public'
+
 # Anket modeli
 class Poll(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
     groups = models.ManyToManyField(Group)
+    
+    visibility = models.CharField(
+        max_length=20,
+        choices=Visibility.choices,
+        default=Visibility.PRIVATE  
+    )
+
     created_at = models.DateField(auto_now_add=True)
 
 # Soru modeli

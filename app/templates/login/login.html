@@ -2,16 +2,36 @@
     <h2>Login Sayfası</h2>
 
     <form method="post">
-    {% csrf_token %}
-    
-    <input type="text" name="username" placeholder="Email">
-    <input type="password" name="password" placeholder="Password">
-    
-    <button type="submit">Login</button>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <label>Email:</label>
+        {{ form.username }}
+
+        {% if form.username.errors %}
+            <div class="error">
+                {{ form.username.errors }}
+            </div>
+        {% endif %}
+
+        <label>Password:</label>
+        {{ form.password }}
+
+        {% if form.password.errors %}
+            <div class="error">
+                {{ form.password.errors }}
+            </div>
+        {% endif %}
+
+        <button type="submit">Login</button>
     </form>
 </div>
 <style>
-    
 body {
     margin: 0;
     padding: 0;
@@ -61,5 +81,12 @@ button {
     font-weight: bold;
     cursor: pointer;
     font-size: 16px;
+}
+.error {
+    color: #d8000c;
+    background: #ffd2d2;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
 }
 </style>

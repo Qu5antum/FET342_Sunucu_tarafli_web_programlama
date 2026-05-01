@@ -10,7 +10,7 @@
         <a href="{% url 'anket:polls' %}">Geri</a>
         
         <div class="nav-right">
-            <a href="/accounts" class="nav-link">Hesabım</a>
+            <a href="/account" class="nav-link">Hesabım</a>
         </div>
     </div>
 </div>
@@ -28,6 +28,13 @@
     {% for group in groups %}
         <input type="checkbox" name="groups" value="{{ group.id }}">
         {{ group.name }}<br>
+    {% endfor %}
+
+    <label>Görünürlük</label><br>
+    {% for value, label in visibilities %}
+        <input type="radio" name="visibility" value="{{ value }}"
+            {% if value == "private" %}checked{% endif %}>
+        {{ label }}<br>
     {% endfor %}
 
     <hr>
