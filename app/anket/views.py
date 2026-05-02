@@ -108,6 +108,9 @@ def poll_by_token(request, token):
 
     if not has_group_access:
         return HttpResponseForbidden("Bu ankete erişim izniniz yok")
+    
+    if PollParticipation.objects.filter(user=request.user, poll=poll).exists():
+        return redirect("anket:poll_results", poll_id=poll.id)
 
     return render(request, "anket/poll_detail.html", {
         "poll": poll

@@ -24,6 +24,7 @@
 
         {% if perms.anket.view_poll %}
             <a href="{% url 'anket:export_poll' poll.id %}" class="csv-btn">CSV İndir</a>
+            <a href="{% url 'anket:poll_summary' poll.id %}" class="csv-btn">Özeti gör</a>
         {% endif %}
 
         {% for question in questions %}
