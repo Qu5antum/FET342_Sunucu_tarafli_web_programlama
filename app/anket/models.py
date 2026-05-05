@@ -33,7 +33,7 @@ class Poll(models.Model):
 
 # Anketi paylaşmak için link oluşturması
 class PollShare(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    poll = models.OneToOneField(Poll, on_delete=models.CASCADE, related_name="share")
 
     token = models.UUIDField(default=uuid.uuid4, unique=True)
 

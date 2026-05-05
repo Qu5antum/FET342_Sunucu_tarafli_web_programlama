@@ -7,185 +7,223 @@
 </head>
 <body>
 
-<div class="upper_bar">
-    <div class="nav-container">
+<div class="navbar">
+    <div class="nav-inner">
         <div class="nav-left">
+            <span class="logo">ANKET SISTEM</span>
+
             {% if perms.anket.add_poll %}
                 <a href="{% url 'anket:create_poll' %}">Anket Oluştur</a>
             {% endif %}
+
             {% for group in request.user.groups.all %}
                 {% if group.name == "teacher" %}
-                    <a href="{% url 'anket:student_poll' %}">Öğrenci Anketleri</a>
+                    <a href="{% url 'anket:student_poll' %}">Öğrenci Anketler</a>
                 {% endif %}
             {% endfor %}
         </div>
-        
+
         <div class="nav-right">
-            <a href="/account" class="nav-link">Hesabım</a>
-            <form action="{% url 'anket:logout' %}" method="post" style="display: inline;">
+            <a href="/account">Hesabım</a>
+
+            <form action="{% url 'anket:logout' %}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="logout-btn">Çıkış Yap</button>
+                <button class="btn-ghost">Çıkış</button>
             </form>
         </div>
     </div>
 </div>
 
-<h2>Mevcut Anketler</h2>
+<div class="container">
+    <div class="header">
+        <h2>Anketler</h2>
+        <span class="subtitle">Tüm mevcut anketler</span>
+    </div>
 
-{% if polls %}
-    <ul>
-        {% for poll in polls %}
-            <li>
-                <h3>{{ poll.title }}</h3>
-                <p>Tanım: {{ poll.description }}</p>
-                <p>Oluşum tarihi: {{ poll.created_at }}</p>
+    {% if polls %}
+        <div class="grid">
+            {% for poll in polls %}
+                <div class="card">
+                    <div class="card-top">
+                        <h3>{{ poll.title }}</h3>
+                        <span class="date">{{ poll.created_at }}</span>
+                    </div>
 
-                <a href="{% url 'anket:poll_summary' poll.id %}">
-                    <button>Özeti gör</button>
-                </a><br><br>
+                    <p class="desc">{{ poll.description }}</p>
 
-                <a href="/polls/{{ poll.id }}/">Anketi Aç</a>
-            </li>
-        {% endfor %}
-    </ul>
+                    <div class="actions">
+                        <a href="{% url 'anket:poll_summary' poll.id %}" class="btn-outline">
+                            Özet
+                        </a>
 
-{% else %}
-    <p>Mevcut anket bulunmadı.</p>
-{% endif %}
-
+                        <a href="/polls/{{ poll.id }}/" class="btn-primary">
+                            Aç
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty">
+            Mevcut anket bulunamadı
+        </div>
+    {% endif %}
+</div>
 
 </body>
 </html>
 
 <style>
-.upper_bar {
-    background-color: #1a3a5f; 
-    height: 60px;
-    width: 100%;
-    position: fixed; 
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+* {
+    box-sizing: border-box;
 }
-.nav-container {
-    width: 100%;
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: #ffffff;
+    color: #111;
+}
+.navbar {
+    height: 60px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.nav-inner {
     max-width: 1200px;
     margin: 0 auto;
+    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 24px;
 }
-.nav-left a, .nav-right a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-.nav-left a:hover, .nav-right a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+.logo {
+    font-weight: 700;
+    color: #d32f2f;
+    margin-right: 18px;
+    letter-spacing: 0.5px;
 }
 .nav-left, .nav-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 16px;
 }
-.logout-btn {
-    background-color: #c0392b;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-    transition: background 0.3s ease;
-}
-.logout-btn:hover {
-    background-color: #e74c3c;
-}
-body {
-    padding-top: 80px; 
-    margin: 0;
-    background-color: #f4f7f6;
-}
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #2c3e50;
-    margin: 0;
-    padding: 80px 40px 40px 40px; 
-}
-.content-wrapper {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #2c3e50;
-    margin: 0;
-    padding: 40px;
-}
-h2 {
-    color: #1a3a5f; 
-    border-bottom: 3px solid #1a3a5f;
-    padding-bottom: 10px;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-li {
-    background: #ffffff;
-    margin-bottom: 20px;
-    padding: 25px;
-    border-left: 8px solid #1a3a5f; 
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-}
-li:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-li h3 {
-    margin-top: 0;
-    color: #2980b9;
-}
-li p {
-    font-size: 0.95em;
-    color: #555;
-    margin: 5px 0;
-}
-button {
-    background-color: #1a3a5f;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
+.navbar a {
+    text-decoration: none;
     font-size: 14px;
-    transition: background 0.3s;
-    margin-right: 10px;
+    color: #444;
+    transition: 0.2s;
 }
-button:hover {
-    background-color: #2c5282;
+.navbar a:hover {
+    color: #d32f2f;
 }
-hr {
-    border: 0;
-    height: 1px;
-    background: #ccc;
-    margin: 20px 0;
+.btn-primary {
+    background: #d32f2f;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+.btn-primary:hover {
+    background: #b71c1c;
+}
+.btn-outline {
+    border: 1px solid #d32f2f;
+    color: #d32f2f;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+.btn-outline:hover {
+    background: #fff1f1;
+}
+.btn-ghost {
+    border: none;
+    background: transparent;
+    color: #d32f2f;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+}
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+.header {
+    margin-bottom: 20px;
+}
+.header h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+}
+.subtitle {
+    font-size: 13px;
+    color: #777;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+}
+.card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 18px;
+    background: #fff;
+    transition: 0.2s ease;
+}
+.card:hover {
+    border-color: #f3c1c1;
+    transform: translateY(-3px);
+}
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.card h3 {
+    margin: 0;
+    font-size: 17px;
+}
+.date {
+    font-size: 12px;
+    color: #999;
+}
+.desc {
+    font-size: 14px;
+    color: #555;
+    margin: 10px 0 16px;
+    line-height: 1.4;
+}
+.actions {
+    display: flex;
+    gap: 10px;
+}
+.empty {
+    margin-top: 40px;
+    padding: 30px;
+    border: 1px dashed #ddd;
+    text-align: center;
+    color: #888;
+    border-radius: 10px;
+}
+.nav-right form {
+    display: inline-flex;
+    margin: 0;
 }
 </style>

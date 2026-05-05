@@ -1,247 +1,395 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Anket</title>
+    <meta charset="UTF-8">
+    <title>Anket Oluştur</title>
+    <style>
+        :root {
+            --primary: #d32f2f;
+            --primary-dark: #b71c1c;
+            --primary-light: #fdecea;
+            --bg: #f8f9fa;
+            --text-main: #202124;
+            --border: #dadce0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+        .navbar {
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-inner {
+            max-width: 1000px;
+            margin: auto;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+        .back-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+        h2 {
+            font-weight: 500;
+            margin-bottom: 24px;
+            color: #3c4043;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.1);
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #5f6368;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 15px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            background: #fff;
+        }
+        .chip input { display: none; }
+        .chip:has(input:checked) {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .chip:hover { border-color: var(--primary); }
+        .btn {
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            width: 100%;
+            font-size: 16px;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+        .btn-outline:hover { background: var(--primary-light); }
+        .btn-danger-sm {
+            color: #d93025;
+            background: transparent;
+            padding: 4px 8px;
+        }
+        .btn-danger-sm:hover { background: #feeeee; }
+        .question-card {
+            border-left: 4px solid var(--primary);
+            background: #fdfdfd;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            border-top: 1px solid #eee;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .option-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .option-row input { margin-bottom: 0; }
+        .add-option-link {
+            color: var(--primary);
+            background: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+        .add-option-link:hover { text-decoration: underline; }
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            background: #fff;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            user-select: none;
+        }
+        .chip input {
+            display: none; 
+        }
+        .chip:has(input:checked) {
+            background-color: #d32f2f;
+            border-color: #d32f2f;
+            color: #fff;
+            box-shadow: 0 4px 6px rgba(211, 47, 47, 0.2);
+        }
+        .chip:hover:not(:has(input:checked)) {
+            border-color: #d32f2f;
+            color: #d32f2f;
+            background: #fdecea;
+        }
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .radio-item:hover {
+            background: #fcfcfc;
+            border-color: #ddd;
+        }
+        .radio-item input[type="radio"] {
+            accent-color: #d32f2f; 
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+        }
+        .radio-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .radio-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #111;
+        }
+        .radio-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        .radio-item:has(input:checked) {
+            border-color: #d32f2f;
+            background-color: #fdecea;
+        }
+
+    </style>
 </head>
 <body>
 
-<div class="upper_bar">
-    <div class="nav-container">
-        <a href="{% url 'anket:polls' %}">Geri</a>
-        
+<nav class="navbar">
+    <div class="nav-inner">
+        <a href="{% url 'anket:polls' %}" class="back-link">Geri Dön</a>
         <div class="nav-right">
-            <a href="/account" class="nav-link">Hesabım</a>
+            <a href="#" style="text-decoration:none; color:#555; font-size:14px;">Hesabım</a>
         </div>
     </div>
-</div>
+</nav>
 
-<h2>Anket Oluştur</h2>
+<div class="container">
+    <h2>Anket Oluştur</h2>
 
-<form method="post">
-    {% csrf_token %}
+    <form method="post" onsubmit="prepareData()">
+        {% csrf_token %}
+        <div class="card">
+            <label>Anket Başlığı</label>
+            <input type="text" name="title" placeholder="Örn: Müşteri Memnuniyeti" required>
 
-    <input type="text" name="title" placeholder="İsim" required><br><br>
+            <label>Açıklama</label>
+            <textarea name="description" rows="3" placeholder="Bu anket hakkında kısa bir bilgi yazın..."></textarea>
+        </div>
 
-    <textarea name="description" placeholder="Tanım"></textarea><br><br>
+        <div class="card">
+            <label>Gruplar</label>
+            <div class="chips">
+                {% for group in groups %}
+                    <label class="chip">
+                        <input type="checkbox" name="groups" value="{{ group.id }}">
+                        <span>{{ group.name }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
 
-    <label>Gruplar:</label><br>
-    {% for group in groups %}
-        <input type="checkbox" name="groups" value="{{ group.id }}">
-        {{ group.name }}<br>
-    {% endfor %}
+        <div class="card">
+            <label>Görünürlük</label>
+            <div class="radio-group">
+                <label class="radio-item">
+                    <input type="radio" name="visibility" value="public">
+                    <div class="radio-content">
+                        <span class="radio-label">Herkese Açık (Public)</span>
+                        <span class="radio-desc">Anket tüm kullanıcılar tarafından görülebilir.</span>
+                    </div>
+                </label>
+                
+                <label class="radio-item">
+                    <input type="radio" name="visibility" value="private" checked>
+                    <div class="radio-content">
+                        <span class="radio-label">Gizli (Private)</span>
+                        <span class="radio-desc">Sadece seçilen gruplar anketi görebilir.</span>
+                    </div>
+                </label>
+            </div>
+        </div>
 
-    <label>Görünürlük</label><br>
-
-    {% for value, label in visibilities %}
-        <input type="radio" name="visibility" value="{{ value }}"
-            {% if value == "private" %}checked{% endif %}>
-        {{ label }}<br>
-    {% endfor %}
-
-    <hr>
-
-    <div id="questions"></div>
-
-    <button type="button" onclick="addQuestion()">+ Soru</button>
-
-    <br><br>
-
-    <input type="hidden" name="questions" id="questionsInput">
-
-    <button type="submit" onclick="prepareData()">Oluştur</button>  
-</form>
-
-<script>
-let questions = []
-
-function addQuestion() {
-    questions.push({ text: "", options: [""] })
-    render()
-}
-
-function addOption(qIndex) {
-    questions[qIndex].options.push("")
-    render()
-}
-
-function updateQuestionText(index, value) {
-    questions[index].text = value
-}
-
-function updateOption(qIndex, oIndex, value) {
-    questions[qIndex].options[oIndex] = value
-}
-
-function render() {
-    const container = document.getElementById("questions")
-    container.innerHTML = ""
-
-    questions.forEach((q, qIndex) => {
-        let qDiv = document.createElement("div")
-
-        qDiv.innerHTML = `
-            <input type="text" placeholder="Soru"
-                onchange="updateQuestionText(${qIndex}, this.value)">
-
-            <div>
-                ${q.options.map((opt, oIndex) => `
-                    <input type="text" placeholder="Seçenek"
-                        onchange="updateOption(${qIndex}, ${oIndex}, this.value)">
-                `).join("")}
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0; font-size:18px;">Sorular</h3>
+                <button type="button" class="btn btn-outline" onclick="addQuestion()">+ Yeni Soru Ekle</button>
             </div>
 
-            <button type="button" onclick="addOption(${qIndex})">+ Seçenek</button>
-            <hr>
-        `
+            <div id="questions"></div>
+        </div>
 
-        container.appendChild(qDiv)
-    })
-}
+        <input type="hidden" name="questions" id="questionsInput">
+        <button type="submit" class="btn btn-primary">Anketi Yayınla</button>
+    </form>
+</div>
 
-function prepareData() {
-    document.getElementById("questionsInput").value = JSON.stringify(questions);
-}
+<script>
+    let questions = [];
+
+    function addQuestion() {
+        questions.push({ text: "", options: ["", ""] });
+        render();
+    }
+
+    function removeQuestion(index) {
+        questions.splice(index, 1);
+        render();
+    }
+
+    function addOption(qIndex) {
+        questions[qIndex].options.push("");
+        render();
+    }
+
+    function removeOption(qIndex, oIndex) {
+        if(questions[qIndex].options.length > 2) {
+            questions[qIndex].options.splice(oIndex, 1);
+            render();
+        } else {
+            alert("En az 2 seçenek olmalıdır.");
+        }
+    }
+
+    function updateQuestionText(i, val) { questions[i].text = val; }
+    function updateOption(q, o, val) { questions[q].options[o] = val; }
+
+    function render() {
+        const container = document.getElementById("questions");
+        container.innerHTML = "";
+
+        questions.forEach((q, qIndex) => {
+            const div = document.createElement("div");
+            div.className = "question-card";
+
+            div.innerHTML = `
+                <div class="q-header">
+                    <span style="font-size:14px; color:#777;">SORU ${qIndex + 1}</span>
+                    <button type="button" class="btn-danger-sm btn" onclick="removeQuestion(${qIndex})">Kaldır</button>
+                </div>
+
+                <input type="text" placeholder="Soru metnini buraya yazın..."
+                    value="${q.text}"
+                    oninput="updateQuestionText(${qIndex}, this.value)">
+
+                <div class="options-list">
+                    ${q.options.map((opt, oIndex) => `
+                        <div class="option-row">
+                            <span style="color:#ccc">•</span>
+                            <input type="text" placeholder="Seçenek ${oIndex + 1}"
+                                value="${opt}"
+                                oninput="updateOption(${qIndex}, ${oIndex}, this.value)">
+                            <button type="button" class="btn-danger-sm btn" onclick="removeOption(${qIndex}, ${oIndex})">✕</button>
+                        </div>
+                    `).join("")}
+                </div>
+
+                <button type="button" class="add-option-link"
+                    onclick="addOption(${qIndex})">+ Seçenek Ekle</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function prepareData() {
+        document.getElementById("questionsInput").value = JSON.stringify(questions);
+    }
+    if(questions.length === 0) addQuestion();
 </script>
 
 </body>
 </html>
-
-<style>
-body {
-font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-background-color: #f0f2f5;
-color: #2c3e50;
-margin: 0;
-padding: 100px 20px 40px 20px;
-display: flex;
-flex-direction: column;
-align-items: center;
-}
-.upper_bar {
-background-color: #1a3a5f;
-height: 60px;
-width: 100%;
-position: fixed;
-top: 0;
-left: 0;
-z-index: 1100;
-display: flex;
-align-items: center;
-box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-}
-.nav-container {
-width: 100%;
-max-width: 1200px;
-margin: 0 auto;
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 0 20px;
-}
-.nav-right {
-display: flex;
-align-items: center;
-gap: 10px; 
-}
-.nav-container a, 
-.nav-link, 
-.logout-btn {
-font-family: 'Segoe UI', Arial, sans-serif;
-font-size: 14px;
-font-weight: 600;
-padding: 0 16px;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-border-radius: 4px;
-transition: all 0.3s ease;
-height: 36px; 
-box-sizing: border-box;
-text-decoration: none;
-line-height: 1;
-border: none;
-margin: 0;
-}
-.nav-container a, .nav-link {
-color: #ffffff;
-background-color: transparent;
-}
-
-.nav-container a:hover {
-background-color: rgba(255, 255, 255, 0.1);
-}
-
-.logout-btn {
-background-color: #c0392b;
-color: white;
-cursor: pointer;
-vertical-align: middle;
-}
-.logout-btn:hover {
-background-color: #e74c3c;
-}
-.logoutForm {
-display: inline-flex;
-margin: 0;
-vertical-align: middle;
-}
-h2 {
-color: #1a3a5f;
-width: 100%;
-max-width: 800px;
-border-bottom: 3px solid #1a3a5f;
-padding-bottom: 10px;
-margin-bottom: 30px;
-text-transform: uppercase;
-}
-form:not(.logoutForm) {
-width: 100%;
-max-width: 800px;
-}
-input[type="text"], textarea {
-width: 100%;
-padding: 12px;
-margin: 10px 0;
-border: 1px solid #ccc;
-border-radius: 6px;
-box-sizing: border-box;
-font-size: 15px;
-}
-textarea { height: 80px; resize: vertical; }
-label {
-font-weight: bold;
-color: #1a3a5f;
-display: block;
-margin-top: 15px;
-}
-#questions > div {
-background: #ffffff;
-padding: 20px;
-margin-bottom: 20px;
-border-radius: 8px;
-border-left: 6px solid #3498db;
-box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-#questions input[placeholder="Seçenek"] {
-background-color: #f9f9f9;
-border-style: dashed;
-width: 90%;
-margin-left: 20px;
-}
-.add-btn {
-background-color: #27ae60;
-color: white;
-padding: 10px 20px;
-margin-bottom: 10px;
-}
-.submit-btn {
-background-color: #1a3a5f;
-color: white;
-width: 100%;
-padding: 15px;
-font-size: 16px;
-margin-top: 20px;
-text-transform: uppercase;
-}
-button:hover { opacity: 0.9; }
-</style>
