@@ -44,12 +44,38 @@
                 {% endfor %}
             </div>
         {% endfor %}
+        <form method="post"
+            action="{% url 'anket:cancel_vote' poll.id %}">
+            
+            {% csrf_token %}
+
+            <button type="submit"
+                    class="cancel-btn"
+                    onclick="return confirm('Oyunuzu iptal etmek istiyor musunuz?')">
+                Oyu İptal Et
+            </button>
+        </form>
     </div>
 
 </body>
 </html>
 {% endblock %}
 <style>
+.cancel-btn {
+    margin-top: 20px;
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 8px;
+    background: #555;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.cancel-btn:hover {
+    background: #333;
+}
 * {
     box-sizing: border-box;
 }

@@ -376,3 +376,25 @@ def get_my_info(request):
     }
 
     return render(request, 'anket/account.html', context)
+
+@login_required
+def cancel_vote(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+
+    if poll.expires_at and timezone.now() > poll.expires_at:
+        return HttpResponseForbidden(
+            "Anket süresi doldu"
+        )
+
+    if request.method == "POST":
+        Vote.objects.filter(
+            user=request.user,
+            poll=poll
+        ).delete
+
+    PollParticipation.objects.filter(
+            user=request.user,
+            poll=poll
+        ).delete()
+
+    return redirect("anket:poll_detail", poll_id=poll.id)
