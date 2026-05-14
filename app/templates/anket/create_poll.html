@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Anket Oluştur</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         :root {
             --primary: #d32f2f;
@@ -302,6 +303,14 @@
                     </div>
                 </label>
             </div>
+            <div style="margin-top:20px;">
+                <label>Anket Son Tarihi</label>
+
+                <input type="text"
+                    id="expires_at"
+                    name="expires_at"
+                    placeholder="Select date and time">
+            </div>
         </div>
 
         <div class="card">
@@ -390,6 +399,17 @@
     }
     if(questions.length === 0) addQuestion();
 </script>
-
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    flatpickr("#expires_at", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        locale: "en",
+        minDate: "today"
+    });
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </body>
 </html>

@@ -8,8 +8,10 @@ from django.db.models import Count
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
+from django.utils import timezone
 import json
 import csv
+from datetime import datetime
 
 from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility, PollShare
 from .form import UserAuthenticationForm
@@ -29,7 +31,10 @@ def logout_user(request):
 
 
 def generate_share_link(request, poll):
-    share = PollShare.objects.create(poll=poll)
+    share, created = PollShare.objects.get_or_create(
+        poll=poll,
+        defaults={}
+    )
 
     url = request.build_absolute_uri(
         reverse("anket:poll_by_token", args=[str(share.token)])
@@ -47,6 +52,34 @@ def create_poll(request):
         title = request.POST.get("title")
         description = request.POST.get("description")
         visibility = request.POST.get("visibility", Visibility.PRIVATE)
+        expires_at_raw = request.POST.get("expires_at")
+
+        expires_at = None
+
+        if expires_at_raw:
+            try:
+                expires_at = datetime.strptime(
+                    expires_at_raw,
+                    "%Y-%m-%d %H:%M"
+                )
+
+                expires_at = timezone.make_aware(expires_at)
+
+                if expires_at <= timezone.now():
+                    messages.error(
+                        request,
+                        "Son tarih gelecekte olmalıdır."
+                    )
+
+                    return redirect("anket:create_poll")
+
+            except ValueError:
+                messages.error(
+                    request,
+                    "Geçersiz tarih formatı."
+                )
+
+                return redirect("anket:create_poll")
 
         if visibility not in Visibility.values:
             visibility = Visibility.PRIVATE
@@ -56,7 +89,8 @@ def create_poll(request):
         poll = Poll.objects.create(
             title=title,
             description=description,
-            visibility=visibility
+            visibility=visibility,
+            expires_at=expires_at
         )
 
         groups = Group.objects.filter(id__in=group_ids)
@@ -109,7 +143,12 @@ def poll_by_token(request, token):
     if not has_group_access:
         return HttpResponseForbidden("Bu ankete erişim izniniz yok")
     
-    if PollParticipation.objects.filter(user=request.user, poll=poll).exists():
+    already_voted = Vote.objects.filter(
+        user=user,
+        poll=poll
+    ).exists()
+
+    if already_voted:
         return redirect("anket:poll_results", poll_id=poll.id)
 
     return render(request, "anket/poll_detail.html", {
@@ -132,6 +171,9 @@ def poll_list(request):
 @login_required
 def poll_detail(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
+
+    if poll.expires_at and timezone.now() > poll.expires_at:
+        return HttpResponseForbidden("Anket süresi doldu")
 
     if not poll.groups.filter(id__in=request.user.groups.all()).exists():
         return redirect("polls")

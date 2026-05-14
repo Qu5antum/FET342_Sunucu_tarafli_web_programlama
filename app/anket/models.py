@@ -28,6 +28,8 @@ class Poll(models.Model):
         default=Visibility.PRIVATE  
     )
 
+    expires_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateField(auto_now_add=True)
 
 
@@ -44,6 +46,11 @@ class PollShare(models.Model):
     )
 
     created_at = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["poll"], name="unique_poll_share")
+        ]
     
 
 # Soru modeli
