@@ -173,14 +173,27 @@ def poll_detail(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
 
     if poll.expires_at and timezone.now() > poll.expires_at:
-        return HttpResponseForbidden("Anket süresi doldu")
+        voted = PollParticipation.objects.filter(
+            user=request.user,
+            poll=poll
+        ).exists()
 
-    if not poll.groups.filter(id__in=request.user.groups.all()).exists():
-        return redirect("polls")
+        if voted:
+            message = "Anket sona erdi. Katılımınız için teşekkür ederiz."
+        else:
+            message = "Anket sona erdi. Oy verme süresi doldu."
+
+        return render(request, "anket/anket_expired.html", {
+            "poll": poll,
+            "message": message
+        })
     
     # sadece bir kere anketi doldumasi eger doldurduysan sonuc goster
     if PollParticipation.objects.filter(user=request.user, poll=poll).exists():
         return redirect("anket:poll_results", poll_id=poll.id)
+
+    if not poll.groups.filter(id__in=request.user.groups.all()).exists():
+        return redirect("polls")
 
     return render(request, "anket/poll_detail.html", {"poll": poll})
 
@@ -382,9 +395,20 @@ def cancel_vote(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
 
     if poll.expires_at and timezone.now() > poll.expires_at:
-        return HttpResponseForbidden(
-            "Anket süresi doldu"
-        )
+        voted = PollParticipation.objects.filter(
+            user=request.user,
+            poll=poll
+        ).exists()
+
+        if voted:
+            message = "Anket sona erdi. Katılımınız için teşekkür ederiz."
+        else:
+            message = "Anket sona erdi. Oy verme süresi doldu."
+
+        return render(request, "anket/anket_expired.html", {
+            "poll": poll,
+            "message": message
+        })
 
     if request.method == "POST":
         Vote.objects.filter(
@@ -393,8 +417,8 @@ def cancel_vote(request, poll_id):
         ).delete
 
     PollParticipation.objects.filter(
-            user=request.user,
-            poll=poll
-        ).delete()
+        user=request.user,
+        poll=poll
+    ).delete()
 
     return redirect("anket:poll_detail", poll_id=poll.id)
