@@ -51,12 +51,22 @@ class PollShare(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["poll"], name="unique_poll_share")
         ]
-    
+
+
+class QuestionType(models.TextChoices):
+    SINGLE = 'single', 'Single choice'
+    MULTIPLE = 'multiple', 'Multiple choicex'
 
 # Soru modeli
 class Question(models.Model):
     text = models.CharField(max_length=200)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+
+    type = models.CharField(
+        max_length=20,
+        choices=QuestionType.choices,
+        default=QuestionType.SINGLE
+    )
 
 # Sorunun Seçenek modeli
 class Option(models.Model):
@@ -71,7 +81,12 @@ class Vote(models.Model):
     option = models.ForeignKey(Option, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('user', 'poll', 'question')
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "question", "option"],
+                name="unique_user_question_option"
+            )
+        ]
 
 # kullanicinin sadece 1 kez oy yapabilmesi
 class PollParticipation(models.Model):

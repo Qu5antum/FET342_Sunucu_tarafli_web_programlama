@@ -13,7 +13,7 @@ import json
 import csv
 from datetime import datetime
 
-from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility, PollShare
+from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility, PollShare, QuestionType
 from .form import UserAuthenticationForm
 
 def in_editor_group(user):
@@ -102,7 +102,8 @@ def create_poll(request):
         for q in questions_data:
             question = Question.objects.create(
                 text=q["text"],
-                poll=poll
+                poll=poll,
+                type=q.get("type", QuestionType.SINGLE)
             )
 
             Option.objects.bulk_create([
@@ -203,7 +204,10 @@ def poll_detail(request, poll_id):
 def vote(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
 
-    if PollParticipation.objects.filter(user=request.user, poll=poll).exists():
+    if PollParticipation.objects.filter(
+        user=request.user,
+        poll=poll
+    ).exists():
         return redirect("anket:poll_results", poll_id=poll.id)
 
     if request.method != "POST":
@@ -212,26 +216,85 @@ def vote(request, poll_id):
     questions = poll.question_set.all()
 
     for question in questions:
-        if not request.POST.get(f"question_{question.id}"):
-            messages.error(request, "Tüm soruları cevaplamalısınız.")
-            return redirect("anket:poll_detail", poll_id=poll.id)
+
+        if question.type == QuestionType.SINGLE:
+
+            selected = request.POST.get(
+                f"question_{question.id}"
+            )
+
+            if not selected:
+                messages.error(request, "Tüm soruları cevaplamalısınız.")
+
+                return redirect("anket:poll_detail", poll_id=poll.id)
+        else:
+            selected = request.POST.getlist(
+                f"question_{question.id}"
+            )
+
+            if not selected:
+                messages.error(request, "Tüm soruları cevaplamalısınız.")
+
+                return redirect("anket:poll_detail", poll_id=poll.id)
 
     for question in questions:
-        option_id = request.POST.get(f"question_{question.id}")
-        option = get_object_or_404(Option, id=option_id, question=question)
-
-        Vote.objects.update_or_create(
+        Vote.objects.filter(
             user=request.user,
-            poll=poll,
-            question=question,
-            defaults={"option": option}
-        )
+            question=question
+        ).delete()
 
-    PollParticipation.objects.get_or_create(user=request.user, poll=poll)
+        if question.type == QuestionType.MULTIPLE:
 
-    messages.success(request, "Oy başarıyla kaydedildi.")
+            option_ids = request.POST.getlist(
+                f"question_{question.id}"
+            )
 
-    return redirect("anket:poll_results", poll_id=poll.id)
+            for option_id in option_ids:
+
+                option = get_object_or_404(
+                    Option,
+                    id=option_id,
+                    question=question
+                )
+
+                Vote.objects.create(
+                    user=request.user,
+                    poll=poll,
+                    question=question,
+                    option=option
+                )
+        else:
+            option_id = request.POST.get(
+                f"question_{question.id}"
+            )
+
+            option = get_object_or_404(
+                Option,
+                id=option_id,
+                question=question
+            )
+
+            Vote.objects.create(
+                user=request.user,
+                poll=poll,
+                question=question,
+                option=option
+            )
+
+    PollParticipation.objects.get_or_create(
+        user=request.user,
+        poll=poll
+    )
+
+    messages.success(
+        request,
+        "Oy başarıyla kaydedildi."
+    )
+
+    return redirect(
+        "anket:poll_results",
+        poll_id=poll.id
+    )
 
 # oylama sonucu
 @login_required

@@ -35,19 +35,33 @@
         {% csrf_token %}
 
         {% for question in poll.question_set.all %}
-            <div class="question-card">
-                <span class="question-text">{{ question.text }}</span>
-
+        <div class="question-card">
+            <span class="question-text">
+                {{ question.text }}
+            </span>
+            {% if question.type == "single" %}
                 {% for option in question.option_set.all %}
                     <label>
                         <input type="radio"
-                               name="question_{{ question.id }}"
-                               value="{{ option.id }}" required>
+                            name="question_{{ question.id }}"
+                            value="{{ option.id }}"
+                            required>
+
                         {{ option.text }}
                     </label>
                 {% endfor %}
-            </div>
-        {% endfor %}
+            {% else %}
+                {% for option in question.option_set.all %}
+                    <label>
+                        <input type="checkbox"
+                            name="question_{{ question.id }}"
+                            value="{{ option.id }}">
+                        {{ option.text }}
+                    </label>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endfor %}
 
         <button type="submit" class="submit-btn">Oyu Gönder</button>
     </form>
