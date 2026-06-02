@@ -21,6 +21,7 @@ class Poll(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
     groups = models.ManyToManyField(Group)
+    allow_vote_cancel = models.BooleanField(default=True)
     
     visibility = models.CharField(
         max_length=20,

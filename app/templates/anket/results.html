@@ -44,17 +44,16 @@
                 {% endfor %}
             </div>
         {% endfor %}
+
+        {% if poll.allow_vote_cancel %}
         <form method="post"
             action="{% url 'anket:cancel_vote' poll.id %}">
-            
             {% csrf_token %}
-
-            <button type="submit"
-                    class="cancel-btn"
-                    onclick="return confirm('Oyunuzu iptal etmek istiyor musunuz?')">
+            <button type="submit" class="cancel-btn" onclick="return confirm('Oyunuzu iptal etmek istiyor musunuz?')">
                 Oyu İptal Et
             </button>
         </form>
+        {% endif %}
     </div>
 
 </body>

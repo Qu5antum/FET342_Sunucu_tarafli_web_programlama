@@ -86,11 +86,14 @@ def create_poll(request):
 
         group_ids = request.POST.getlist("groups")
 
+        allow_vote_cancel = (request.POST.get("allow_vote_cancel") == "on")
+
         poll = Poll.objects.create(
             title=title,
             description=description,
             visibility=visibility,
-            expires_at=expires_at
+            expires_at=expires_at,
+            allow_vote_cancel=allow_vote_cancel
         )
 
         groups = Group.objects.filter(id__in=group_ids)
@@ -456,6 +459,11 @@ def get_my_info(request):
 @login_required
 def cancel_vote(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
+
+    if not poll.allow_vote_cancel:
+        message.error(request, "Bu ankette oy iptali kapalıdır")
+
+        return redirect("anket:poll_results", poll_id=poll.id)
 
     if poll.expires_at and timezone.now() > poll.expires_at:
         voted = PollParticipation.objects.filter(
