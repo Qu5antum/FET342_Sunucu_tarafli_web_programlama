@@ -44,6 +44,7 @@
                 {% endfor %}
             </div>
         {% endfor %}
+        
 
         {% if poll.allow_vote_cancel %}
         <form method="post"
@@ -54,6 +55,23 @@
             </button>
         </form>
         {% endif %}
+        <div class="feedback-section">
+            <h3>Kullanıcı Mesajları</h3>
+
+            {% for feedback in poll_comments %}
+                <div class="feedback-card">
+                    <strong>
+                        {{ feedback.user.email }}
+                    </strong>
+
+                    <p>
+                        {{ feedback.message }}
+                    </p>
+                </div>
+            {% empty %}
+                <p>Henüz mesaj yok.</p>
+            {% endfor %}
+        </div>
     </div>
 
 </body>
@@ -188,5 +206,19 @@ h4 {
         flex-direction: column;
         gap: 4px;
     }
+}
+.feedback-section {
+    margin-top: 40px;
+}
+.feedback-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: #fff;
+}
+.feedback-card p {
+    margin-top: 8px;
+    color: #555;
 }
 </style>

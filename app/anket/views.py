@@ -13,7 +13,7 @@ import json
 import csv
 from datetime import datetime
 
-from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility, PollShare, QuestionType
+from .models import Poll, PollParticipation, Option, Vote, Group, Question, User, Visibility, PollShare, QuestionType, PollComment
 from .form import UserAuthenticationForm
 
 def in_editor_group(user):
@@ -283,6 +283,17 @@ def vote(request, poll_id):
                 question=question,
                 option=option
             )
+        
+    feedback_message = request.POST.get("feedback_message","").strip()
+    
+    if feedback_message:
+        PollComment.objects.update_or_create(
+            user=request.user,
+            poll=poll,
+            defaults={
+                "message": feedback_message
+            }
+        )
 
     PollParticipation.objects.get_or_create(
         user=request.user,
@@ -317,9 +328,14 @@ def poll_results(request, poll_id):
 
         question.options = options
 
+    poll_comments = PollComment.objects.filter(
+        poll=poll
+    ).select_related("user")
+
     return render(request, "anket/results.html", {
         "poll": poll,
-        "questions": questions
+        "questions": questions,
+        "poll_comments": poll_comments
     })
             
 

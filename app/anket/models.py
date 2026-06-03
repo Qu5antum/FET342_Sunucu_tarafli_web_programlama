@@ -96,3 +96,13 @@ class PollParticipation(models.Model):
 
     class Meta:
         unique_together = ('user', 'poll')
+
+
+class PollComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+
+    message = models.TextField()
+
+    class Meta:
+        unique_together = ("user", "poll")
